@@ -4,63 +4,56 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   // Точка входа в приложение
-  entry: './src/main.js',
+  entry: './src/main.js', // Убедитесь, что файл main.js находится в корне проекта или скорректируйте путь
 
   // Выходные данные сборки
   output: {
-    path: path.resolve(__dirname, 'build'),
-    filename: 'bundle.[contenthash].js',
-    clean: true, // Очистка папки сборки перед каждой сборкой
+    path: path.resolve(__dirname, 'build'), // Абсолютный путь к папке сборки
+    filename: 'bundle.[contenthash].js', // Имя файла сборки с хешированием для кэширования
+    clean: true, // Очистка директории build перед каждой сборкой
   },
 
-  // Генерация source maps для удобной отладки
+  // Генерация source maps для отладки
   devtool: 'source-map',
 
-  // Настройка загрузчиков для модулей
+  // Настройка загрузчиков (loaders)
   module: {
     rules: [
       {
-        test: /\.m?js$/,
+        test: /\.m?js$/, // Применяем babel-loader ко всем файлам .js
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env'], // Транспиляция современного JS
-          },
-        },
-      },
-      // Если понадобятся лоадеры для CSS:
-      // {
-      //   test: /\.css$/,
-      //   use: ['style-loader', 'css-loader'],
-      // },
-    ],
+            presets: ['@babel/preset-env'] // Транспиляция современного JS в совместимый с выбранными браузерами код
+          }
+        }
+      }
+    ]
   },
 
   // Плагины для расширения функциональности сборки
   plugins: [
-    // Копирование статических файлов из папки public в build (исключая index.html)
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: path.resolve(__dirname, 'public'),
+          from: path.resolve(__dirname, 'public'), // Исходная папка с файлами (например, index.html, стили, изображения)
           to: path.resolve(__dirname, 'build'),
           globOptions: {
-            ignore: ['**/index.html'],
-          },
-        },
-      ],
+            ignore: ['**/index.html'] // Исключаем index.html, чтобы html-webpack-plugin сгенерировал его заново
+          }
+        }
+      ]
     }),
-    // Автоматическая генерация index.html с подключением бандла
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'public', 'index.html'),
-      filename: 'index.html',
-    }),
+      template: path.resolve(__dirname, 'public', 'index.html'), // Файл-шаблон HTML
+      filename: 'index.html'
+    })
   ],
 
-  // Настройка сервера разработки
+  // Настройки сервера разработки
   devServer: {
-    static: path.resolve(__dirname, 'build'),
-    open: true, // Автоматическое открытие браузера при старте
-  },
+    static: path.resolve(__dirname, 'build'), // Папка, которую сервер будет обслуживать
+    open: true, // Автоматическое открытие браузера
+  }
 };
